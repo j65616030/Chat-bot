@@ -27,6 +27,7 @@ def generar_respuesta(pregunta, max_length=50):
         
         # Actualizar los inputs
         nuevo_input = torch.tensor([[token.item()]])
+        nuevo_input = nuevo_input.expand(1, inputs['input_ids'].size(1))
         inputs['input_ids'] = torch.cat((inputs['input_ids'], nuevo_input), dim=1)
         inputs['attention_mask'] = torch.cat((inputs['attention_mask'], torch.ones(1, 1)), dim=1)
         
