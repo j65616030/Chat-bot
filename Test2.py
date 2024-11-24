@@ -22,18 +22,21 @@ def generar_respuesta(pregunta, max_length=50):
         # Obtener el token más probable
         token = torch.argmax(outputs.last_hidden_state[:, -1, :])
         
-        # Agregar el token a la respuesta
-        respuesta.append(token.item())
+        # Decodificar el token
+        token_decodificado = tokenizer.decode(token.item(), skip_special_tokens=True)
+        
+        # Agregar el token decodificado a la respuesta
+        respuesta.append(token_decodificado)
         
         # Actualizar los inputs
-        nuevo_input = tokenizer.decode(token.item())
-        inputs = tokenizer(nuevo_input, return_tensors='pt')
+        nuevo_input = tokenizer(token_decodificado, return_tensors='pt')
+        inputs = nuevo_input
         
         # Ejecutar el modelo BERT
         outputs = modelo(**inputs)
     
-    # Decodificar la respuesta
-    respuesta = tokenizer.decode(respuesta, skip_special_tokens=True)
+    # Unir la respuesta en un solo string
+    respuesta = ' '.join(respuesta)
     
     return respuesta
 
