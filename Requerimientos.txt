@@ -1,0 +1,9 @@
+Descarga el modelo BERT pre-entrenado utilizando el comando wget https://huggingface.co/bert-base-uncased/resolve/main/pytorch_model.bin
+Descarga el tokenizer BERT utilizando el comando wget https://huggingface.co/bert-base-uncased/resolve/main/vocab.txt
+transformers==4.12.5
+torch==1.9.0
+numpy==1.20.2
+pandas==1.3.5
+scikit-learn==1.0.2
+matplotlib==3.5.1
+seaborn==0.11.1
