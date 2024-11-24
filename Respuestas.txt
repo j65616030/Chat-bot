@@ -1,0 +1,3 @@
+hola:Hola, ¿cómo estás?
+¿cómo estás?:Estoy bien, gracias. ¿Y tú?
+adiós:Adiós, que tengas un buen día.
