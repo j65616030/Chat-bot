@@ -1,19 +1,40 @@
-from transformers import T5Tokenizer, T5ForConditionalGeneration
+from transformers import BertTokenizer, BertModel
+import torch
+import torch.nn as nn
 
-# Cargar el modelo T5 y el tokenizador
-tokenizer = T5Tokenizer.from_pretrained('t5-base')
-modelo = T5ForConditionalGeneration.from_pretrained('t5-base')
+# Cargar el modelo BERT y el tokenizador
+tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
+modelo = BertModel.from_pretrained('bert-base-uncased')
 
 # Definir la función de generación de respuesta
 def generar_respuesta(pregunta, max_length=50):
     # Tokenizar la pregunta
     inputs = tokenizer(pregunta, return_tensors='pt')
     
+    # Ejecutar el modelo BERT
+    outputs = modelo(**inputs)
+    
+    # Inicializar la respuesta
+    respuesta = []
+    
     # Generar la respuesta
-    outputs = modelo.generate(inputs['input_ids'], max_length=max_length)
+    for i in range(max_length):
+        # Obtener el token más probable
+        token = torch.argmax(outputs.last_hidden_state[:, -1, :])
+        
+        # Agregar el token a la respuesta
+        respuesta.append(token.item())
+        
+        # Actualizar los inputs
+        nuevo_input = torch.tensor([[token.item()]])
+        inputs['input_ids'] = torch.cat((inputs['input_ids'], nuevo_input), dim=1)
+        inputs['attention_mask'] = torch.cat((inputs['attention_mask'], torch.ones(1, 1)), dim=1)
+        
+        # Ejecutar el modelo BERT
+        outputs = modelo(**inputs)
     
     # Decodificar la respuesta
-    respuesta = tokenizer.decode(outputs[0], skip_special_tokens=True)
+    respuesta = tokenizer.decode(respuesta, skip_special_tokens=True)
     
     return respuesta
 
