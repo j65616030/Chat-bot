@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chatbot</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <style>
+        body {
+            background-color: #f7f7f7;
+            font-family: Arial, sans-serif;
+        }
+        .container {
+            max-width: 400px;
+            margin: 40px auto;
+            background-color: #fff;
+            padding: 20px;
+            border: 1px solid #ddd;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .chat-window {
+            padding: 20px;
+            background-color: #f7f7f7;
+            border: 1px solid #ddd;
+            height: 400px;
+            overflow-y: auto;
+        }
+        .chat-window .message {
+            margin-bottom: 20px;
+            padding: 10px;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .chat-window .message .text {
+            font-size: 16px;
+            color: #333;
+        }
+        .chat-window .message .username {
+            font-size: 14px;
+            color: #666;
+        }
+        .input-group {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            background-color: #fff;
+            padding: 10px;
+            border-top: 1px solid #ddd;
+            text-align: center;
+        }
+        .input-group input {
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ddd;
+            width: 70%;
+            margin: 0 10px;
+        }
+        .input-group button {
+            padding: 10px;
+            font-size: 16px;
+            background-color: #4CAF50;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .input-group button i {
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Chatbot</h2>
+        <div class="chat-window">
+            <div class="message">
+                <span class="username">Chatbot:</span>
+                <span class="text">Hola, ¿en qué puedo ayudarte?</span>
+            </div>
+        </div>
+        <div class="input-group">
+            <input type="text" id="message" placeholder="Escribe un mensaje...">
+            <button id="send"><i class="fas fa-paper-plane"></i></button>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/js/all.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#send').click(function() {
+                var message = $('#message').val();
+                if (message != '') {
+                    var chatWindow = $('.chat-window');
+                    chatWindow.append('<div class="message"><span class="username">Tú:</span><span class="text">' + message + '</span></div>');
+                    chatWindow.scrollTop(chatWindow[0].scrollHeight);
+                    $.ajax({
+                        type: 'POST',
+                        url: '/chatbot',
+                        data: JSON.stringify({mensaje: message}),
+                        contentType: 'application/json',
+                        dataType: 'json',
+                        success: function(respuesta) {
+                            chatWindow.append('<div class="message"><span class="username">Chatbot:</span><span class="text">' + respuesta.respuesta + '</span></div>');
+                            chatWindow.scrollTop(chatWindow[0].scrollHeight);
+                            $('#message').val('');
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
