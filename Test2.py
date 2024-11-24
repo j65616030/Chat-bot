@@ -1,0 +1,43 @@
+from transformers import BertTokenizer, BertModel
+from torch.nn import Linear, Softmax
+import torch
+
+# Cargar el modelo BERT y el tokenizador
+tokenizer = BertTokenizer.from_pretrained('bert-base-cased')
+modelo = BertModel.from_pretrained('bert-base-cased')
+
+# Definir la función de generación de respuesta
+def generar_respuesta(pregunta, max_length=50):
+    # Tokenizar la pregunta
+    inputs = tokenizer(pregunta, return_tensors='pt')
+    
+    # Ejecutar el modelo BERT
+    outputs = modelo(**inputs)
+    
+    # Inicializar la respuesta
+    respuesta = []
+    
+    # Generar la respuesta
+    for i in range(max_length):
+        # Obtener el token más probable
+        token = torch.argmax(outputs.last_hidden_state[:, -1, :])
+        
+        # Agregar el token a la respuesta
+        respuesta.append(token.item())
+        
+        # Actualizar los inputs
+        inputs['input_ids'] = torch.cat((inputs['input_ids'], token.unsqueeze(0).unsqueeze(0)), dim=1)
+        inputs['attention_mask'] = torch.cat((inputs['attention_mask'], torch.ones(1, 1)), dim=1)
+        
+        # Ejecutar el modelo BERT
+        outputs = modelo(**inputs)
+    
+    # Decodificar la respuesta
+    respuesta = tokenizer.decode(respuesta, skip_special_tokens=True)
+    
+    return respuesta
+
+# Probar la función de generación de respuesta
+pregunta = "¿Cuál es el significado de la vida?"
+respuesta = generar_respuesta(pregunta)
+print(respuesta)
